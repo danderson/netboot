@@ -77,9 +77,10 @@ type Spec struct {
 	// Optional init ramdisks for linux kernels
 	Initrd []ID
 	// Optional kernel commandline. This string is evaluated as a
-	// text/template template, in which "ID(x)" function is
-	// available. Invoking ID(x) returns a URL that will call
-	// Booter.ReadBootFile(x) when fetched.
+	// text/template template, in which these functions are available:
+	// "ID(x)": returns a URL that will call
+	//          Booter.ReadBootFile(x) when fetched.
+	// "ServerHost()": returns the server address of the http server
 	Cmdline string
 	// Message to print on the client machine before booting.
 	Message string

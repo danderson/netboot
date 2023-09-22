@@ -30,6 +30,10 @@ import (
 	"time"
 )
 
+func dummyServerHost() string {
+	return "{{ ServerHost }}"
+}
+
 // StaticBooter boots all machines with the same Spec.
 //
 // IDs in spec should be either local file paths, or HTTP/HTTPS URLs.
@@ -50,7 +54,7 @@ func StaticBooter(spec *Spec) (Booter, error) {
 		ret.otherIDs = append(ret.otherIDs, id)
 		return fmt.Sprintf("{{ ID \"other-%d\" }}", len(ret.otherIDs)-1)
 	}
-	cmdline, err := expandCmdline(spec.Cmdline, template.FuncMap{"ID": f})
+	cmdline, err := expandCmdline(spec.Cmdline, template.FuncMap{"ID": f, "ServerHost": dummyServerHost})
 	if err != nil {
 		return nil, err
 	}
@@ -237,7 +241,7 @@ func (b *apibooter) BootSpec(m Machine) (*Spec, error) {
 		}
 		return fmt.Sprintf("{{ ID %q }}", id), nil
 	}
-	ret.Cmdline, err = expandCmdline(ret.Cmdline, template.FuncMap{"URL": f})
+	ret.Cmdline, err = expandCmdline(ret.Cmdline, template.FuncMap{"URL": f, "ServerHost": dummyServerHost})
 	if err != nil {
 		return nil, err
 	}

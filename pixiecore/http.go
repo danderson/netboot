@@ -207,10 +207,14 @@ func ipxeScript(mach Machine, spec *Spec, serverHost string) ([]byte, error) {
 		fmt.Fprintf(&b, "initrd=initrd%d ", i)
 	}
 
-	f := func(id string) string {
+	idFunc := func(id string) string {
 		return fmt.Sprintf("http://%s/_/file?name=%s", serverHost, url.QueryEscape(id))
 	}
-	cmdline, err := expandCmdline(spec.Cmdline, template.FuncMap{"ID": f})
+	serverHostFunc := func() string {
+		return serverHost
+	}
+	cmdline, err := expandCmdline(spec.Cmdline,
+		template.FuncMap{"ID": idFunc, "ServerHost": serverHostFunc})
 	if err != nil {
 		return nil, fmt.Errorf("expanding cmdline %q: %s", spec.Cmdline, err)
 	}
