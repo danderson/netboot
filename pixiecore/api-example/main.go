@@ -36,7 +36,10 @@ var (
 func main() {
 	flag.Parse()
 	http.HandleFunc("/v1/boot/", api)
-	http.ListenAndServe(":"+strconv.Itoa(*port), nil)
+	err := http.ListenAndServe(":"+strconv.Itoa(*port), nil)
+	if err != nil {
+		panic(err)
+	}
 }
 
 func api(w http.ResponseWriter, r *http.Request) {

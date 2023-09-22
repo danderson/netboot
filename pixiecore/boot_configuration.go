@@ -95,7 +95,10 @@ func (bc *APIBootConfiguration) GetBootURL(id []byte, clientArchType uint16) ([]
 	defer resp.Body.Close()
 
 	buf := new(bytes.Buffer)
-	buf.ReadFrom(resp.Body)
+	_, err = buf.ReadFrom(resp.Body)
+	if err != nil {
+		return nil, err
+	}
 	url, _ := bc.makeURLAbsolute(buf.String())
 
 	return []byte(url), nil

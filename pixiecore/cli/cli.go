@@ -83,7 +83,10 @@ func serverConfigFlags(cmd *cobra.Command) {
 
 	// Development flags, hidden from normal use.
 	cmd.Flags().String("ui-assets-dir", "", "UI assets directory (used for development)")
-	cmd.Flags().MarkHidden("ui-assets-dir")
+	err := cmd.Flags().MarkHidden("ui-assets-dir")
+	if err != nil {
+		panic(err)
+	}
 }
 
 func mustFile(path string) []byte {

@@ -167,7 +167,10 @@ func (s *Server) transfer(addr net.Addr, req *rrq) error {
 
 	file, size, err := s.Handler(req.Filename, addr)
 	if err != nil {
-		conn.Write(tftpError("failed to get file"))
+		_, cerr := conn.Write(tftpError("failed to get file"))
+		if cerr != nil {
+			return fmt.Errorf("getting file bytes: %s, write err: %s", err, cerr)
+		}
 		return fmt.Errorf("getting file bytes: %s", err)
 	}
 	defer file.Close()

@@ -187,10 +187,22 @@ func (p *Packet) Marshal() ([]byte, error) {
 		ret.Write([]byte{0, 0})
 	}
 
-	writeIP(ret, p.ClientAddr)
-	writeIP(ret, p.YourAddr)
-	writeIP(ret, p.ServerAddr)
-	writeIP(ret, p.RelayAddr)
+	err = writeIP(ret, p.ClientAddr)
+	if err != nil {
+		return nil, err
+	}
+	err = writeIP(ret, p.YourAddr)
+	if err != nil {
+		return nil, err
+	}
+	err = writeIP(ret, p.ServerAddr)
+	if err != nil {
+		return nil, err
+	}
+	err = writeIP(ret, p.RelayAddr)
+	if err != nil {
+		return nil, err
+	}
 
 	// MAC address + 10 bytes of padding
 	ret.Write([]byte(p.HardwareAddr))
@@ -237,12 +249,14 @@ func (p *Packet) Marshal() ([]byte, error) {
 	return ret.Bytes(), nil
 }
 
-func writeIP(w io.Writer, ip net.IP) {
+func writeIP(w io.Writer, ip net.IP) error {
 	ip = ip.To4()
 	if ip == nil {
-		w.Write([]byte{0, 0, 0, 0})
+		_, err := w.Write([]byte{0, 0, 0, 0})
+		return err
 	} else {
-		w.Write([]byte(ip))
+		_, err := w.Write([]byte(ip))
+		return err
 	}
 }
 

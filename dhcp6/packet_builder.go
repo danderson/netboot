@@ -123,7 +123,7 @@ func (b *PacketBuilder) makeMsgReleaseReply(transactionID [3]byte, serverDUID, c
 
 	retOptions.Add(MakeOption(OptClientID, clientID))
 	retOptions.Add(MakeOption(OptServerID, serverDUID))
-	v := make([]byte, 19, 19)
+	v := make([]byte, 19)
 	copy(v[2:], []byte("Release received."))
 	retOptions.Add(MakeOption(OptStatusCode, v))
 
@@ -177,6 +177,6 @@ func iasWithoutAddesses(availableAssociations []*IdentityAssociation, allIAs [][
 
 func calculateIAIDHash(interfaceID []byte) uint64 {
 	h := fnv.New64a()
-	h.Write(interfaceID)
+	_, _ = h.Write(interfaceID)
 	return h.Sum64()
 }
