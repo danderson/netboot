@@ -15,6 +15,7 @@
 package pixiecore
 
 import (
+	"bytes"
 	"crypto/rand"
 	"encoding/json"
 	"fmt"
@@ -126,16 +127,20 @@ func (s *staticBooter) WriteBootFile(ID, io.Reader) error {
 // APIBooter gets a BootSpec from a remote server over HTTP.
 //
 // The API is described in README.api.md
-func APIBooter(url string, timeout time.Duration) (Booter, error) {
+func APIBooter(url string, timeout time.Duration, signingKey [32]byte) (Booter, error) {
 	if !strings.HasSuffix(url, "/") {
 		url += "/"
 	}
 	ret := &apibooter{
 		client:    &http.Client{Timeout: timeout},
 		urlPrefix: url + "v1",
+		key:       signingKey,
 	}
-	if _, err := io.ReadFull(rand.Reader, ret.key[:]); err != nil {
-		return nil, fmt.Errorf("failed to get randomness for signing key: %s", err)
+	emptyByteVar := make([]byte, 32)
+	if bytes.Equal(signingKey[:], emptyByteVar) {
+		if _, err := io.ReadFull(rand.Reader, ret.key[:]); err != nil {
+			return nil, fmt.Errorf("failed to get randomness for signing key: %s", err)
+		}
 	}
 
 	return ret, nil

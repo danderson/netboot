@@ -73,8 +73,10 @@ func v1compatCLI() bool {
 			fatalf("cannot provide -cmdline with -api")
 		}
 
+		var key [32]byte
+
 		log.Printf("Starting Pixiecore in API mode, with server %s", *apiServer)
-		booter, err := pixiecore.APIBooter(*apiServer, *apiTimeout)
+		booter, err := pixiecore.APIBooter(*apiServer, *apiTimeout, key)
 		if err != nil {
 			fatalf("Failed to create API booter: %s", err)
 		}

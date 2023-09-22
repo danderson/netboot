@@ -15,6 +15,7 @@
 package cli
 
 import (
+	"encoding/base64"
 	"fmt"
 	"time"
 
@@ -42,10 +43,31 @@ the Pixiecore boot API. The specification can be found at <TODO>.`,
 			fatalf("Error reading flag: %s", err)
 		}
 
-		booter, err := pixiecore.APIBooter(server, timeout)
+		var key [32]byte
+
+		signingKey, err := cmd.Flags().GetString("signing-key")
+		if err != nil {
+			fatalf("Error reading flag: %s", err)
+		} else {
+			if signingKey != "" {
+				keydata, err := base64.StdEncoding.DecodeString(signingKey)
+				if err != nil {
+					fmt.Println("Error decoding signing key (it should be base64 encoded):", err)
+				} else {
+					if len(keydata) > 32 {
+						fatalf("Too long signin key")
+					} else {
+						copy(key[:], keydata)
+					}
+				}
+			}
+		}
+
+		booter, err := pixiecore.APIBooter(server, timeout, key)
 		if err != nil {
 			fatalf("Failed to create API booter: %s", err)
 		}
+
 		s := serverFromFlags(cmd)
 		s.Booter = booter
 
@@ -56,5 +78,6 @@ func init() {
 	rootCmd.AddCommand(apiCmd)
 	serverConfigFlags(apiCmd)
 	apiCmd.Flags().Duration("api-request-timeout", 5*time.Second, "Timeout for request to the API server")
+	apiCmd.Flags().String("signing-key", "", "Signing key")
 	// TODO: SSL cert flags for both client and server auth.
 }
