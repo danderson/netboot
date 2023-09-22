@@ -42,6 +42,11 @@ func (s *Server) serveHTTP(mux *http.ServeMux) {
 	mux.HandleFunc("/_/ipxe", s.handleIpxe)
 	mux.HandleFunc("/_/file", s.handleFile)
 	mux.HandleFunc("/_/booting", s.handleBooting)
+	if s.HTTPStaticDir != "" {
+		s.debug("HTTP", "serving %q at %s", s.HTTPStaticDir, s.HTTPStaticPrefix)
+		mux.Handle(s.HTTPStaticPrefix,
+			http.StripPrefix(s.HTTPStaticPrefix, http.FileServer(http.Dir(s.HTTPStaticDir))))
+	}
 }
 
 func (s *Server) handleIpxe(w http.ResponseWriter, r *http.Request) {

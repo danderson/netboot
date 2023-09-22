@@ -159,6 +159,10 @@ type Server struct {
 	Address string
 	// HTTP port for boot services.
 	HTTPPort int
+	// Directory to serve static files on the HTTP server.
+	HTTPStaticDir string
+	// URL Prefix to serve the static directory on the HTTP server.
+	HTTPStaticPrefix string
 	// HTTP port for human-readable information. Can be the same as
 	// HTTPPort.
 	HTTPStatusPort int

@@ -74,6 +74,8 @@ func serverConfigFlags(cmd *cobra.Command) {
 	cmd.Flags().BoolP("log-timestamps", "t", false, "Add a timestamp to each log line")
 	cmd.Flags().StringP("listen-addr", "l", "0.0.0.0", "IPv4 address to listen on")
 	cmd.Flags().IntP("port", "p", 80, "Port to listen on for HTTP")
+	cmd.Flags().String("static-dir", "", "Static directory to serve on the HTTP port")
+	cmd.Flags().String("static-prefix", "/_/static/", "HTTP URL prefix to serve --static-dir")
 	cmd.Flags().Int("status-port", 0, "HTTP port for status information (can be the same as --port)")
 	cmd.Flags().Bool("dhcp-no-bind", false, "Handle DHCP traffic without binding to the DHCP server port")
 	cmd.Flags().String("ipxe-bios", "", "Path to an iPXE binary for BIOS/UNDI")
@@ -146,6 +148,14 @@ func serverFromFlags(cmd *cobra.Command) *pixiecore.Server {
 	if err != nil {
 		fatalf("Error reading flag: %s", err)
 	}
+	httpStaticDir, err := cmd.Flags().GetString("static-dir")
+	if err != nil {
+		fatalf("Error reading flag: %s", err)
+	}
+	httpStaticPrefix, err := cmd.Flags().GetString("static-prefix")
+	if err != nil {
+		fatalf("Error reading flag: %s", err)
+	}
 	httpStatusPort, err := cmd.Flags().GetInt("status-port")
 	if err != nil {
 		fatalf("Error reading flag: %s", err)
@@ -180,12 +190,14 @@ func serverFromFlags(cmd *cobra.Command) *pixiecore.Server {
 	}
 
 	ret := &pixiecore.Server{
-		Ipxe:           map[pixiecore.Firmware][]byte{},
-		Log:            logWithStdFmt,
-		HTTPPort:       httpPort,
-		HTTPStatusPort: httpStatusPort,
-		DHCPNoBind:     dhcpNoBind,
-		UIAssetsDir:    uiAssetsDir,
+		Ipxe:             map[pixiecore.Firmware][]byte{},
+		Log:              logWithStdFmt,
+		HTTPPort:         httpPort,
+		HTTPStaticDir:    httpStaticDir,
+		HTTPStaticPrefix: httpStaticPrefix,
+		HTTPStatusPort:   httpStatusPort,
+		DHCPNoBind:       dhcpNoBind,
+		UIAssetsDir:      uiAssetsDir,
 	}
 	for fwtype, bs := range Ipxe {
 		ret.Ipxe[fwtype] = bs
