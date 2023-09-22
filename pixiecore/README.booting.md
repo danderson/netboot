@@ -1,17 +1,22 @@
 # How it works
 
 Pixiecore implements four different, but related protocols in one
-binary, which together can take a PXE ROM from nothing to booting
-Linux. They are: ProxyDHCP, PXE, TFTP, and HTTP. Let's walk through
-the boot process for a PXE ROM.
+binary, which together can take a network card to boot system into
+Linux. They are: ProxyDHCP, PXE, TFTP, and HTTP. Let's
+walk through the network boot process.
 
 ![Boot process](https://cdn.rawgit.com/google/netboot/master/pixiecore/bootgraph.svg)
 
 ## Step 1: DHCP/ProxyDHCP
 
+Network boot is initiated by PXE ROM firmware that is embedded in
+a capable network card.
+
 The first thing a PXE ROM does is request a configuration through
-DHCP, with some additional PXE options set to indicate that it wants
-to netboot. It expects a reply that mirrors some of these options, and
+DHCP request with additional PXE options set to indicate that it wants
+to netboot (on a lower level it is `DHCPDISCOVER` with
+[Option 60](https://en.wikipedia.org/wiki/Dynamic_Host_Configuration_Protocol#DHCP_client_vendor_identification)).
+It expects a reply that mirrors some of these options, and
 includes boot instructions in addition to network configuration.
 
 The normal way of providing these options is to edit your DHCP
