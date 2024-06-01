@@ -15,7 +15,6 @@
 package pixiecore
 
 import (
-	"encoding/base64"
 	"fmt"
 	"net"
 	"time"
@@ -99,11 +98,4 @@ func (s *Server) debug(subsystem, format string, args ...interface{}) {
 		return
 	}
 	s.Debug(subsystem, fmt.Sprintf(format, args...))
-}
-
-func (s *Server) debugPacket(subsystem string, layer int, packet []byte) {
-	if s.Debug == nil {
-		return
-	}
-	s.Debug(subsystem, fmt.Sprintf("PKT %d %s END", layer, base64.StdEncoding.EncodeToString(packet)))
 }

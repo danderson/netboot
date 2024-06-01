@@ -164,15 +164,27 @@ func (o Options) marshalLimited(w io.Writer, nBytes int, skip52 bool) (Options, 
 			continue
 		}
 
-		w.Write([]byte{byte(n), byte(len(opt))})
-		w.Write(opt)
+		_, err := w.Write([]byte{byte(n), byte(len(opt))})
+		if err != nil {
+			return nil, err
+		}
+		_, err = w.Write(opt)
+		if err != nil {
+			return nil, err
+		}
 		nBytes -= len(opt) + 2
 	}
 
-	w.Write([]byte{255})
+	_, err := w.Write([]byte{255})
+	if err != nil {
+		return nil, err
+	}
 	nBytes--
 	if nBytes > 0 {
-		w.Write(make([]byte, nBytes))
+		_, err = w.Write(make([]byte, nBytes))
+		if err != nil {
+			return nil, err
+		}
 	}
 
 	return ret, nil

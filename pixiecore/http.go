@@ -113,7 +113,10 @@ func (s *Server) handleIpxe(w http.ResponseWriter, r *http.Request) {
 	start = time.Now()
 	s.machineEvent(mac, machineStateIpxeScript, "Sent iPXE boot script")
 	w.Header().Set("Content-Type", "text/plain")
-	w.Write(script)
+	_, err = w.Write(script)
+	if err != nil {
+		s.debug("HTTP", "writing response caused an error:%v", err)
+	}
 	s.debug("HTTP", "Writing ipxe script to %s took %s", mac, time.Since(start))
 	s.debug("HTTP", "handleIpxe for %s took %s", mac, time.Since(overallStart))
 }

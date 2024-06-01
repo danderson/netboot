@@ -50,7 +50,7 @@ func (p *Packet) Marshal() ([]byte, error) {
 		return nil, fmt.Errorf("packet has malformed options section: %s", err)
 	}
 
-	ret := make([]byte, len(marshalledOptions)+4, len(marshalledOptions)+4)
+	ret := make([]byte, len(marshalledOptions)+4)
 	ret[0] = byte(p.Type)
 	copy(ret[1:], p.TransactionID[:])
 	copy(ret[4:], marshalledOptions)
@@ -99,7 +99,7 @@ func shouldDiscardRequest(p *Packet, serverDuid []byte) error {
 	if !options.HasServerID() {
 		return fmt.Errorf("'Request' packet has no server id option")
 	}
-	if bytes.Compare(options.ServerID(), serverDuid) != 0 {
+	if !bytes.Equal(options.ServerID(), serverDuid) {
 		return fmt.Errorf("'Request' packet's server id option (%d) is different from ours (%d)", options.ServerID(), serverDuid)
 	}
 	return nil
@@ -113,7 +113,7 @@ func shouldDiscardInformationRequest(p *Packet, serverDuid []byte) error {
 	if options.HasIaNa() || options.HasIaTa() {
 		return fmt.Errorf("'Information-request' packet has an IA option present")
 	}
-	if options.HasServerID() && (bytes.Compare(options.ServerID(), serverDuid) != 0) {
+	if options.HasServerID() && (!bytes.Equal(options.ServerID(), serverDuid)) {
 		return fmt.Errorf("'Information-request' packet's server id option (%d) is different from ours (%d)", options.ServerID(), serverDuid)
 	}
 	return nil

@@ -2,13 +2,14 @@ package pool
 
 import (
 	"fmt"
-	"go.universe.tf/netboot/dhcp6"
 	"hash/fnv"
 	"math/big"
 	"math/rand"
 	"net"
 	"sync"
 	"time"
+
+	"go.universe.tf/netboot/dhcp6"
 )
 
 type associationExpiration struct {
@@ -153,7 +154,7 @@ func (p *RandomAddressPool) calculateAssociationExpiration(now time.Time) time.T
 
 func (p *RandomAddressPool) calculateIAIDHash(clientID, interfaceID []byte) uint64 {
 	h := fnv.New64a()
-	h.Write(clientID)
-	h.Write(interfaceID)
+	_, _ = h.Write(clientID)
+	_, _ = h.Write(interfaceID)
 	return h.Sum64()
 }

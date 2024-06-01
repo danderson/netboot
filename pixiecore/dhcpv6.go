@@ -2,6 +2,7 @@ package pixiecore
 
 import (
 	"fmt"
+
 	"go.universe.tf/netboot/dhcp6"
 )
 
@@ -23,10 +24,10 @@ func (s *ServerV6) serveDHCP(conn *dhcp6.Conn) error {
 		if err != nil {
 			s.log("dhcpv6", fmt.Sprintf("Error creating response for transaction: %d: %s", pkt.TransactionID, err))
 			if response == nil {
-				s.log("dhcpv6", fmt.Sprintf("Dropping the packet"))
+				s.log("dhcpv6", "Dropping the packet")
 				continue
 			} else {
-				s.log("dhcpv6", fmt.Sprintf("Will notify the client"))
+				s.log("dhcpv6", "Will notify the client")
 			}
 		}
 		if response == nil {
